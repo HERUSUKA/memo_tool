@@ -1,0 +1,1156 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>視点メモツール</title>
+    <style>
+        :root{--bg:#f8fafc;--card:#ffffff;--muted:#64748b;--accent:#3b82f6;--accent-hover:#2563eb;--border:#e2e8f0;--text:#0f172a;--text-light:#475569}
+        [data-theme="dark"]{--bg:#0f0f0f;--card:#212121;--muted:#aaaaaa;--accent:#3ea6ff;--accent-hover:#65b8ff;--border:#3f3f3f;--text:#f1f1f1;--text-light:#aaaaaa}
+    body{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:var(--bg); margin:0; padding:0; color:var(--text); font-size:19px; line-height:1.6; transition:background 0.3s ease, color 0.3s ease}
+    .wrap{max-width:1750px; margin:0 auto; padding:20px 25px}
+    h1{margin:0 0 13px 0; font-size:30px; font-weight:700; color:var(--text); letter-spacing:-0.02em}
+        .watermark{font-size:16px; color:var(--muted); font-weight:400; margin-left:15px; letter-spacing:0.02em}
+        .header{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px}
+        .title-row{display:flex; align-items:center}
+    .header-controls{display:flex; gap:10px; align-items:center}
+    .icon-btn{background:var(--card); color:var(--text); border:1px solid var(--border); width:34px; height:34px; padding:0; border-radius:8px; cursor:pointer; font-size:18px; font-weight:600; transition:all 0.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:inline-flex; align-items:center; justify-content:center; line-height:1}
+    .icon-btn:hover{background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 3px 8px rgba(59,130,246,0.2); transform:translateY(-1px)}
+    .icon-btn:active{transform:translateY(0)}
+    .theme-toggle{background:var(--card); color:var(--text); border:1px solid var(--border); padding:0; border-radius:8px; cursor:pointer; font-size:18px; font-weight:600; transition:all 0.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05); width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center}
+    .theme-toggle:hover{background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 3px 8px rgba(59,130,246,0.2); transform:translateY(-1px)}
+        .theme-toggle:active{transform:translateY(0)}
+        .top{display:flex; gap:20px; align-items:center; margin-bottom:18px}
+        .file-input{flex:1}
+        input[type=file]{display:none}
+        .file-label{background:var(--accent); color:#fff; border:0; padding:11px 20px; border-radius:10px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.1); font-size:18px; font-weight:500; display:inline-block; transition:all 0.2s ease}
+        .file-label:hover{background:var(--accent-hover); box-shadow:0 5px 15px rgba(59,130,246,0.2); transform:translateY(-1px)}
+        .file-label:active{transform:translateY(0)}
+        .file-name{color:var(--text); font-weight:500; margin-left:20px; font-size:18px}
+        .player{display:flex; justify-content:center; align-items:center; margin:0}
+        video{border-radius:15px; box-shadow:0 10px 30px rgba(15,23,42,0.08); width:100%; max-width:100%; aspect-ratio:16/9; background:#000}
+    .controls{background:var(--card); padding:10px 13px; border-radius:10px; border:1px solid var(--border); box-shadow:0 3px 8px rgba(15,23,42,0.04); margin-bottom:10px; transition:all 0.3s ease}
+    .controls-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px}
+        .current{font-weight:600; color:var(--text); font-size:18px}
+        .hint{color:var(--muted); font-size:15px; font-weight:500}
+    .input-row{display:flex; gap:10px}
+    input[type=text]{padding:9px 13px; border-radius:10px; border:1px solid var(--border); font-size:18px; flex:1; transition:all 0.2s ease; background:var(--card); color:var(--text)}
+        input[type=text]:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(59,130,246,0.1)}
+        input[type=text]::placeholder{color:#94a3b8}
+    button{background:var(--accent); color:#fff; border:0; padding:9px 15px; border-radius:10px; cursor:pointer; font-size:18px; font-weight:500; transition:all 0.2s ease}
+        button:hover{background:var(--accent-hover); transform:translateY(-1px); box-shadow:0 5px 15px rgba(59,130,246,0.2)}
+        button:active{transform:translateY(0)}
+        button#addTimestampButton{padding:9px 15px}
+        button.secondary{background:var(--card); color:var(--text); border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,0.05); padding:6px 11px; font-size:15px; transition:all 0.2s ease}
+        button.secondary:hover{background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 3px 8px rgba(59,130,246,0.2); transform:translateY(-1px)}
+        button.secondary:active{transform:translateY(0)}
+        button.secondary.active{background:var(--accent); color:#fff; border-color:var(--accent)}
+        @keyframes blink-button{0%,100%{transform:scale(1)}50%{transform:scale(1.05);box-shadow:0 0 0 4px rgba(249,115,22,0.5)}}
+        .blink{animation:blink-button 0.4s ease-in-out 3}
+        @keyframes bounce-in{0%{transform:scale(0.98); opacity:0.6}100%{transform:scale(1); opacity:1}}
+        .entry-bounce{animation:bounce-in 0.3s ease-out; background:rgba(59,130,246,0.08)}
+    @keyframes entry-delete{0%{background:rgba(239,68,68,0.12); opacity:1; transform:scale(1)}100%{background:rgba(239,68,68,0); opacity:0; transform:scale(0.98)}}
+    .entry-delete{animation:entry-delete 0.18s ease-out forwards}
+        .memo-section{background:var(--card); border-radius:15px; border:1px solid var(--border); overflow:hidden; box-shadow:0 3px 10px rgba(15,23,42,0.04); transition:background-color 0.2s ease, border-color 0.2s ease}
+    .memo-header{display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border); background:#fafbfc; transition:background-color 0.2s ease, border-color 0.2s ease}
+        [data-theme="dark"] .memo-header{background:#181818}
+        .memo-header strong{font-size:18px; font-weight:600; color:var(--text)}
+        .memo-buttons{display:flex; gap:5px}
+    pre#logArea{background:var(--card); padding:15px; margin:0; min-height:275px; max-height:875px; overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word; font-family: "Segoe UI", Meiryo, "Yu Gothic", system-ui, monospace; font-size:20px; line-height:1.5; border:none; color:var(--text); transition:background-color 0.2s ease, color 0.2s ease}
+        pre#logArea::-webkit-scrollbar{width:10px}
+        pre#logArea::-webkit-scrollbar-track{background:transparent}
+        pre#logArea::-webkit-scrollbar-thumb{background:#cbd5e1; border-radius:5px}
+        pre#logArea::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+        .filename{font-weight:600; color:var(--accent); margin-bottom:10px; font-size:19px}
+    .entry{margin:0; line-height:1.7}
+        .entry .ts{background:transparent; color:inherit; border:0; border-radius:0; padding:0; cursor:pointer; font-size:0.95em; text-decoration:none; font-weight:500; transition:color 0.15s ease}
+        .entry .ts:hover{color:var(--accent); text-decoration:underline}
+        .entry .ts:focus-visible{outline:3px solid rgba(37,99,235,0.35); outline-offset:3px; border-radius:3px}
+    .entry .del-per{position:fixed; transform:scale(0.9); width:25px; height:25px; border-radius:6px; background:#fff; color:#ef4444; border:1px solid #fecaca; box-shadow:0 3px 10px rgba(239,68,68,0.15); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; line-height:1; cursor:pointer; z-index:10000; opacity:0; pointer-events:none; transition:opacity 0.12s ease, transform 0.12s ease, background-color 0.12s ease, border-color 0.12s ease}
+    .entry .del-per.show{opacity:1; transform:scale(1); pointer-events:auto}
+        .entry .del-per:hover{background:#fef2f2; border-color:#ef4444; box-shadow:0 5px 15px rgba(239,68,68,0.25)}
+        [data-theme="dark"] .entry .del-per{background:#2d2d2d; color:#ff6b6b; border-color:#4a2828}
+        [data-theme="dark"] .entry .del-per:hover{background:#3d1f1f; border-color:#ff6b6b; box-shadow:0 5px 15px rgba(255,107,107,0.25)}
+        pre#logArea[contenteditable="true"]{border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+        .player{position:relative}
+        .speed-indicator{position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.85); color:#fff; padding:20px 35px; border-radius:13px; font-size:35px; font-weight:700; opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:1000; backdrop-filter:blur(10px)}
+        .speed-indicator.show{opacity:1}
+        .skip-indicator{position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.7); color:#fff; width:90px; height:90px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.15s; z-index:999; backdrop-filter:blur(8px)}
+        .skip-indicator.show{opacity:1}
+        .skip-indicator.left{left:15%}
+        .skip-indicator.right{right:15%}
+        .skip-indicator .arrows{font-size:32px; line-height:1; margin-bottom:4px}
+        .skip-indicator .seconds{font-size:14px; font-weight:600}
+        .pause-indicator{position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.7); color:#fff; width:90px; height:90px; border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.15s; z-index:999; backdrop-filter:blur(8px)}
+        .pause-indicator.show{opacity:1}
+        .pause-indicator .icon{font-size:40px; line-height:1}
+        .volume-indicator{position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.7); color:#fff; width:90px; height:90px; border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.15s; z-index:999; backdrop-filter:blur(8px)}
+        .volume-indicator.show{opacity:1}
+        .volume-indicator .icon{font-size:40px; line-height:1}
+        .volume-percent{position:absolute; top:15%; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); color:#fff; padding:8px 16px; border-radius:20px; font-size:18px; font-weight:bold; opacity:0; pointer-events:none; transition:opacity 0.15s; z-index:999; backdrop-filter:blur(8px)}
+        .volume-percent.show{opacity:1}
+        #localVideoPlayer{outline:none}
+        #localVideoPlayer:focus{outline:none}
+        #localVideoPlayer:focus-visible{outline:none}
+        .player:focus-within #localVideoPlayer{outline:none}
+        body:focus{outline:none}
+        body:focus-visible{outline:none}
+        #wrap:focus{outline:none}
+        #wrap:focus-visible{outline:none}
+        .content-grid{display:grid; grid-template-columns:1.7fr 1fr; gap:25px; align-items:start}
+        .player video{max-width:100%}
+    textarea#editArea{display:none; width:100%; min-height:275px; padding:20px; border-radius:13px; border:1px solid var(--accent); box-shadow:0 0 0 4px rgba(59,130,246,0.1); font-family: 'Segoe UI', Meiryo, 'Yu Gothic', system-ui, monospace; font-size:20px; line-height:1.5; resize:vertical; outline:none; background:var(--card); color:var(--text); box-sizing:border-box; transition:all 0.3s ease}
+        .footer{margin-top:30px; padding-top:20px; border-top:1px solid var(--border); transition:border-color 0.3s ease}
+        #message{color:var(--text-light); font-size:18px; font-weight:500}
+    .info-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:20000}
+        .info-backdrop.show{display:flex}
+        .info-modal{background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:12px; width:min(680px,92vw); max-height:80vh; overflow:auto; box-shadow:0 15px 40px rgba(0,0,0,0.2)}
+        .info-header{display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--border); font-weight:700; font-size:18px}
+        .info-content{padding:14px 16px; font-size:16px; line-height:1.7}
+        .info-content ul{margin:0; padding-left:18px}
+        .info-close{background:var(--card); color:var(--text); border:1px solid var(--border); width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:18px; display:inline-flex; align-items:center; justify-content:center}
+        .info-close:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
+    </style>
+</head>
+<body>
+    <div id="wrap" class="wrap" tabindex="-1">
+        <div class="header">
+            <div class="title-row">
+                <h1>視点メモツール<span class="watermark">by HELSKA</span></h1>
+            </div>
+            <div class="header-controls">
+                <button id="infoBtn" class="icon-btn" aria-label="ショートカット情報">⌨️</button>
+                <button id="themeToggle" class="theme-toggle" aria-label="テーマ切替">🌙</button>
+            </div>
+        </div>
+        <div class="content-grid">
+            <div class="left-col">
+                <div class="top">
+                    <div class="file-input">
+                        <label for="videoFile" class="file-label">ファイルを選択</label>
+                        <input type="file" id="videoFile" accept="video/*,.txt">
+                        <span id="fileName" class="file-name"></span>
+                    </div>
+                </div>
+                <div class="player">
+                    <div id="speedIndicator" class="speed-indicator"></div>
+                    <div id="skipIndicator" class="skip-indicator">
+                        <div class="arrows"></div>
+                        <div class="seconds">5秒</div>
+                    </div>
+                    <div id="pauseIndicator" class="pause-indicator">
+                        <div class="icon"></div>
+                    </div>
+                    <div id="volumeIndicator" class="volume-indicator">
+                        <div class="icon"></div>
+                    </div>
+                    <div id="volumePercent" class="volume-percent"></div>
+                    <video id="localVideoPlayer" controls width="800" style="max-width:100%;" tabindex="-1"></video>
+                </div>
+            </div>
+            <div class="right-col">
+                <div class="controls">
+                    <div class="controls-row">
+                        <div><span class="current">現在: </span><span id="currentTime">00:00:00</span></div>
+                        <span class="hint"><strong>Enter</strong> で追加</span>
+                    </div>
+                    <div class="input-row">
+                        <input id="noteInput" type="text" placeholder="メモを入力…">
+                        <button id="addTimestampButton">追加</button>
+                    </div>
+                </div>
+                <div class="memo-section">
+                    <div class="memo-header">
+                        <strong>メモファイル</strong>
+                        <div class="memo-buttons">
+                            <button id="editBtn" class="secondary">編集</button>
+                            <button id="downloadBtn" class="secondary">保存</button>
+                        </div>
+                    </div>
+                    <pre id="logArea"></pre>
+                    <textarea id="editArea"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div id="message" class="hint"></div>
+        </div>
+    </div>
+    <div id="infoBackdrop" class="info-backdrop" aria-hidden="true">
+        <div class="info-modal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+            <div class="info-header">
+                <div id="infoTitle">ショートカット</div>
+                <button id="infoClose" class="info-close" aria-label="閉じる">×</button>
+            </div>
+            <div class="info-content">
+                <ul>
+                    <li><strong>Enter</strong>: 追加/入力欄フォーカス</li>
+                    <li><strong>T</strong>: 入力欄にフォーカス</li>
+                    <li><strong>E</strong>: 編集モード切替</li>
+                    <li><strong>Space</strong> / <strong>P</strong>: 再生・一時停止</li>
+                    <li><strong>J</strong>/<strong>K</strong>/<strong>L</strong>: 速度↓ / リセット(1x) / 速度↑</li>
+                    <li><strong>Ctrl</strong> + <strong>←/→</strong>: 前/次のタイムスタンプへ</li>
+                    <li><strong>←/→</strong>: 5秒スキップ（<strong>Shift</strong> + <strong>←/→</strong> で30秒）</li>
+                    <li><strong>↑/↓</strong>: 音量 ±</li>
+                    <li><strong>Ctrl+Z</strong> / <strong>Ctrl+Y</strong>: 元に戻す・やり直し</li>
+                    <li><strong>Esc</strong>: 編集終了またはフォーカス解除</li>
+                    <li>タイムスタンプ<strong>クリック</strong>: 該当時刻へ移動</li>
+                    <li>タイムスタンプ<strong>ドラッグ</strong>: 時刻微調整して再配置</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+    const videoInput = document.getElementById('videoFile');
+    const videoPlayer = document.getElementById('localVideoPlayer');
+        const fileNameDisplay = document.getElementById('fileName');
+        const messageDisplay = document.getElementById('message');
+        const currentTimeEl = document.getElementById('currentTime');
+        const addBtn = document.getElementById('addTimestampButton');
+        const noteInput = document.getElementById('noteInput');
+        const logArea = document.getElementById('logArea');
+        const editArea = document.getElementById('editArea');
+    const editBtn = document.getElementById('editBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const wrapEl = document.getElementById('wrap');
+    const speedIndicator = document.getElementById('speedIndicator');
+    const skipIndicator = document.getElementById('skipIndicator');
+    const pauseIndicator = document.getElementById('pauseIndicator');
+    const volumeIndicator = document.getElementById('volumeIndicator');
+    const volumePercent = document.getElementById('volumePercent');
+    const themeToggle = document.getElementById('themeToggle');
+    const infoBtn = document.getElementById('infoBtn');
+    const infoBackdrop = document.getElementById('infoBackdrop');
+    const infoClose = document.getElementById('infoClose');
+        let isEditing = false;
+        let entries = [];
+        let currentVideoFile = null;
+        let showFileName = true;
+    let pointerActive = false;
+    let pointerDidSeek = false;
+    let programmaticSeek = false;
+    let lastMouseX = -99999;
+    let lastMouseY = -99999;
+    let pendingDelUpdate = false;
+    function scheduleDeleteButtonsUpdate() {
+        if (pendingDelUpdate) return;
+        pendingDelUpdate = true;
+        requestAnimationFrame(() => {
+            pendingDelUpdate = false;
+            if (typeof updateDeleteButtons === 'function') {
+                updateDeleteButtons({ clientX: lastMouseX, clientY: lastMouseY });
+            }
+        });
+    }
+    let history = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 50;
+    function saveHistory() {
+        history = history.slice(0, historyIndex + 1);
+        history.push(JSON.stringify(entries));
+        if (history.length > MAX_HISTORY) {
+            history.shift();
+        } else {
+            historyIndex++;
+        }
+    }
+    function undo() {
+        if (historyIndex > 0) {
+            historyIndex--;
+            entries = JSON.parse(history[historyIndex]);
+            updatePreview();
+        }
+    }
+    function redo() {
+        if (historyIndex < history.length - 1) {
+            historyIndex++;
+            entries = JSON.parse(history[historyIndex]);
+            updatePreview();
+        }
+    }
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        setTheme(theme);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+    }
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        localStorage.setItem('theme', theme);
+    }
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        setTheme(currentTheme === 'light' ? 'dark' : 'light');
+    }
+    initTheme();
+    themeToggle.addEventListener('click', toggleTheme);
+    function openInfo(){ infoBackdrop.classList.add('show'); infoBackdrop.setAttribute('aria-hidden','false'); }
+    function closeInfo(){ infoBackdrop.classList.remove('show'); infoBackdrop.setAttribute('aria-hidden','true'); }
+    infoBtn.addEventListener('click', openInfo);
+    infoClose.addEventListener('click', closeInfo);
+    infoBackdrop.addEventListener('click', (e)=>{ if(e.target === infoBackdrop) closeInfo(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && infoBackdrop.classList.contains('show')) closeInfo(); }, true);
+        function syncMemoPaneHeight() {
+            try {
+                const memoSection = document.querySelector('.memo-section');
+                const memoHeader = memoSection ? memoSection.querySelector('.memo-header') : null;
+                const headerH = memoHeader ? memoHeader.offsetHeight : 0;
+                const vidH = videoPlayer ? videoPlayer.clientHeight : 0;
+                if (vidH > 0) {
+                    const avail = Math.max(275, vidH - headerH);
+                    logArea.style.maxHeight = avail + 'px';
+                    editArea.style.height = avail + 'px';
+                }
+            } catch (e) {}
+        }
+        function processFile(file) {
+            if (!file) return;
+            if (file.type && file.type.startsWith('video/')) {
+                currentVideoFile = file;
+                showFileName = true;
+                fileNameDisplay.textContent = file.name;
+                const fileURL = URL.createObjectURL(file);
+                videoPlayer.src = fileURL;
+                videoPlayer.addEventListener('keydown', (e) => {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                    }
+                });
+                updatePreview();
+                updateMessage('読み込み: ' + file.name);
+            } else if (/\.txt$/i.test(file.name)) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const content = ev.target.result;
+                    const lines = content.split('\n').map(l => l.trim()).filter(l => l);
+                    if (lines.length === 0) { updateMessage('ファイルが空です'); return; }
+                    let startIndex = 0;
+                    if (lines[0] && parseSecondsFromLine(lines[0]) === Number.POSITIVE_INFINITY && !lines[0].startsWith('[')) {
+                        startIndex = 1;
+                    }
+                    entries = lines.slice(startIndex);
+                    saveHistory();
+                    updatePreview();
+                    updateMessage('インポートしました: ' + file.name);
+                };
+                reader.readAsText(file);
+            } else {
+                updateMessage('動画ファイルまたは .txt ファイルを選択してください');
+            }
+        }
+        videoInput.addEventListener('change', (event) => {
+            const file = event.target.files && event.target.files[0];
+            if (file) processFile(file);
+            event.target.value = '';
+        });
+        ;['dragenter','dragover'].forEach(evt => {
+            document.addEventListener(evt, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+            });
+        });
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const files = e.dataTransfer && e.dataTransfer.files;
+            if (files && files.length > 0) {
+                const list = Array.from(files);
+                const videos = list.filter(f => f.type && f.type.startsWith('video/'));
+                const txts = list.filter(f => /\.txt$/i.test(f.name));
+                if (videos.length > 0) processFile(videos[0]);
+                txts.forEach(f => processFile(f));
+            }
+        });
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            const hh = h.toString().padStart(2, '0');
+            const mm = m.toString().padStart(2, '0');
+            const ss = s.toString().padStart(2, '0');
+            return hh + ':' + mm + ':' + ss;
+        }
+        videoPlayer.addEventListener('timeupdate', () => {
+            currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+        });
+        videoPlayer.addEventListener('seeked', () => {
+            if (programmaticSeek) { programmaticSeek = false; return; }
+            setTimeout(() => {
+                try {
+                    if (typeof videoPlayer.focus === 'function') {
+                        videoPlayer.focus({ preventScroll: true });
+                    }
+                } catch(_) {}
+            }, 10);
+        });
+        document.addEventListener('pointerdown', (e) => {
+            try {
+                const path = e.composedPath ? e.composedPath() : [];
+                const hitVideo = path.length ? path.includes(videoPlayer) : (e.target === videoPlayer || videoPlayer.contains(e.target));
+                if (hitVideo) {
+                    pointerActive = true;
+                    pointerDidSeek = false;
+                }
+            } catch(_) {
+                if (e.target === videoPlayer || videoPlayer.contains(e.target)) {
+                    pointerActive = true; pointerDidSeek = false;
+                }
+            }
+        }, true);
+        videoPlayer.addEventListener('seeking', () => {
+            if (pointerActive) pointerDidSeek = true;
+        }, true);
+        const endPointer = () => {
+            if (!pointerActive) return;
+            pointerActive = false;
+            pointerDidSeek = false;
+        };
+        document.addEventListener('pointerup', endPointer, true);
+        document.addEventListener('pointercancel', endPointer, true);
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+        }
+        function renderEntryHTML(line, index) {
+            const m = line.match(/^\s*\[(\d{2}):(\d{2}):(\d{2})\]\s*(.*)$/);
+            if (!m) return '<div class="entry">' + escapeHtml(line) + '</div>';
+            const h = parseInt(m[1], 10), mi = parseInt(m[2], 10), s = parseInt(m[3], 10);
+            const secs = h * 3600 + mi * 60 + s;
+            const ts = `[${m[1]}:${m[2]}:${m[3]}]`;
+            const memo = m[4] ? ' ' + escapeHtml(m[4]) : '';
+            return `<div class="entry" data-index="${index}"><button class="del-per" data-index="${index}" aria-label="削除">×</button><button class="ts" data-seconds="${secs}" data-index="${index}">${ts}</button>${memo}</div>`;
+        }
+        function parseSecondsFromLine(line) {
+            const m = line.match(/^\s*\[(\d{2}):(\d{2}):(\d{2})\]/);
+            if (!m) return Number.POSITIVE_INFINITY;
+            const h = parseInt(m[1], 10) || 0;
+            const mi = parseInt(m[2], 10) || 0;
+            const s = parseInt(m[3], 10) || 0;
+            return h * 3600 + mi * 60 + s;
+        }
+        function sortEntries() {
+            entries.sort((a, b) => parseSecondsFromLine(a) - parseSecondsFromLine(b));
+        }
+        function updatePreview() {
+            const fileName = (currentVideoFile && showFileName) ? currentVideoFile.name : '';
+            if (isEditing) {
+                logArea.textContent = (fileName ? fileName + '\n' : '') + entries.join('\n');
+                return;
+            }
+            let html = '';
+            if (fileName) html += '<div class="filename">' + escapeHtml(fileName) + '</div>';
+            html += entries.map((line, index) => renderEntryHTML(line, index)).join('');
+            logArea.innerHTML = html;
+            if (typeof syncMemoPaneHeight === 'function') {
+                syncMemoPaneHeight();
+            }
+            if (typeof updateDeleteButtons === 'function') {
+                updateDeleteButtons({ clientX: lastMouseX, clientY: lastMouseY });
+            }
+        }
+        logArea.addEventListener('click', (e) => {
+            const delBtn = e.target.closest('.del-per');
+            if (delBtn) {
+                const idx = parseInt(delBtn.dataset.index, 10);
+                if (idx >= 0 && idx < entries.length) {
+                    const entryEl = delBtn.closest('.entry');
+                    if (delBtn.tagName === 'BUTTON') {
+                        delBtn.disabled = true;
+                    }
+                    if (entryEl) {
+                        entryEl.classList.add('entry-delete');
+                    }
+                    setTimeout(() => {
+                        entries.splice(idx, 1);
+                        saveHistory();
+                        updatePreview();
+                        updateMessage('削除しました');
+                    }, 180);
+                }
+                return;
+            }
+            if (!isEditing) {
+                const btn = e.target.closest('.ts');
+                if (btn) {
+                    if (dragState && !dragState.clickShouldFire) {
+                        return;
+                    }
+                    const secs = Number(btn.dataset.seconds);
+                    if (videoPlayer.src && Number.isFinite(secs)) {
+                        programmaticSeek = true;
+                        videoPlayer.currentTime = secs;
+                        const playPromise = videoPlayer.play();
+                        if (playPromise && typeof playPromise.then === 'function') { 
+                            playPromise.catch(() => {}); 
+                        }
+                        updateMessage('移動: ' + btn.textContent);
+                    } else if (!videoPlayer.src) {
+                        updateMessage('先に動画を読み込んでください');
+                    }
+                }
+            }
+        });
+        let dragState = null;
+        logArea.addEventListener('mousedown', (e) => {
+            if (isEditing) return;
+            const btn = e.target.closest('.ts');
+            if (!btn) return;
+            const index = Number(btn.dataset.index);
+            if (!Number.isFinite(index) || index < 0) return;
+            const secs = Number(btn.dataset.seconds);
+            if (!Number.isFinite(secs)) return;
+            dragState = {
+                btn: btn,
+                index: index,
+                startX: e.clientX,
+                startSeconds: secs,
+                isDragging: false,
+                clickShouldFire: true
+            };
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!dragState) return;
+            if (e.buttons === 0) {
+                const mouseupEvent = new MouseEvent('mouseup', {
+                    bubbles: true,
+                    cancelable: true,
+                    clientX: e.clientX,
+                    clientY: e.clientY
+                });
+                document.dispatchEvent(mouseupEvent);
+                return;
+            }
+            const deltaX = e.clientX - dragState.startX;
+            const threshold = 10;
+            if (!dragState.isDragging && Math.abs(deltaX) > threshold) {
+                dragState.isDragging = true;
+                dragState.clickShouldFire = false;
+                dragState.btn.style.cursor = 'ew-resize';
+                dragState.btn.style.color = '#f97316';
+            }
+            if (dragState.isDragging) {
+                e.preventDefault();
+                const secondsChange = Math.max(-30, Math.min(30, deltaX / 80));
+                const newSeconds = Math.max(0, dragState.startSeconds + secondsChange);
+                const newTime = formatTime(newSeconds);
+                dragState.btn.textContent = `[${newTime}]`;
+                dragState.btn.dataset.seconds = newSeconds;
+                dragState.currentSeconds = newSeconds;
+            }
+        });
+        document.addEventListener('mouseup', (e) => {
+            if (!dragState) return;
+            const wasDragging = dragState.isDragging;
+            if (!wasDragging) {
+                dragState = null;
+                return;
+            }
+            const index = dragState.index;
+            const btn = dragState.btn;
+            const newSeconds = dragState.currentSeconds;
+            dragState = null;
+            if (btn) {
+                btn.style.cursor = '';
+                btn.style.color = '';
+            }
+            const oldEntry = entries[index];
+            console.log('Old entry:', oldEntry);
+            const memoMatch = oldEntry.match(/^\s*\[\d{2}:\d{2}:\d{2}\]\s*(.*)$/);
+            const savedMemo = memoMatch ? memoMatch[1] : '';
+            console.log('Saved memo:', savedMemo);
+                const oldSeconds = parseSecondsFromLine(oldEntry);
+                const newSecs = Math.floor(newSeconds);
+                console.log('Old seconds:', oldSeconds, '-> New seconds:', newSecs);
+                let prevTimestampSecs = -1;
+                let nextTimestampSecs = Number.POSITIVE_INFINITY;
+                for (let i = index - 1; i >= 0; i--) {
+                    const secs = parseSecondsFromLine(entries[i]);
+                    if (secs !== Number.POSITIVE_INFINITY) {
+                        prevTimestampSecs = secs;
+                        break;
+                    }
+                }
+                for (let i = index + 1; i < entries.length; i++) {
+                    const secs = parseSecondsFromLine(entries[i]);
+                    if (secs !== Number.POSITIVE_INFINITY) {
+                        nextTimestampSecs = secs;
+                        break;
+                    }
+                }
+                console.log('Prev timestamp:', prevTimestampSecs, 'Next timestamp:', nextTimestampSecs);
+                if (newSecs >= prevTimestampSecs && newSecs <= nextTimestampSecs) {
+                    console.log('Order unchanged, keeping position');
+                    const ts = formatTime(newSeconds);
+                    const line = '[' + ts + '] ' + (savedMemo ? savedMemo : '');
+                    entries[index] = line;
+                    updatePreview();
+                    updateMessage(`時刻を調整しました: ${ts}`);
+                    if (videoPlayer.src) {
+                        videoPlayer.currentTime = newSeconds;
+                    }
+                    return;
+                }
+                console.log('Order changed, repositioning');
+                entries.splice(index, 1);
+                console.log('After delete, entries:', entries);
+                const ts = formatTime(newSeconds);
+                const line = '[' + ts + '] ' + (savedMemo ? savedMemo : '');
+                console.log('New line to insert:', line);
+                for (let i = 0; i < entries.length; i++) {
+                    const currentSecs = parseSecondsFromLine(entries[i]);
+                    console.log(`Entry ${i}: "${entries[i]}" -> ${currentSecs} seconds`);
+                    if (currentSecs === Number.POSITIVE_INFINITY) continue;
+                    if (currentSecs < newSecs) continue;
+                    console.log(`Inserting at position ${i}`);
+                    entries.splice(i, 0, line);
+                    saveHistory();
+                    updatePreview();
+                    updateMessage(`時刻を調整しました: ${ts}`);
+                    if (videoPlayer.src) {
+                        videoPlayer.currentTime = newSeconds;
+                    }
+                    return;
+                }
+                console.log('Inserting at end');
+                entries.push(line);
+                saveHistory();
+                updatePreview();
+                updateMessage(`時刻を調整しました: ${ts}`);
+                if (videoPlayer.src) {
+                    videoPlayer.currentTime = newSeconds;
+                }
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (!dragState) return;
+            const wasDragging = dragState.isDragging;
+            const index = dragState.index;
+            const btn = dragState.btn;
+            const newSeconds = dragState.isDragging ? dragState.currentSeconds : dragState.startSeconds;
+            dragState = null;
+            if (btn) {
+                btn.style.cursor = '';
+                btn.style.color = '';
+            }
+            if (wasDragging) {
+                const oldEntry = entries[index];
+                const memoMatch = oldEntry.match(/^\s*\[\d{2}:\d{2}:\d{2}\]\s*(.*)$/);
+                const savedMemo = memoMatch ? memoMatch[1] : '';
+                const oldSeconds = parseSecondsFromLine(oldEntry);
+                const newSecs = Math.floor(newSeconds);
+                let prevTimestampSecs = -1;
+                let nextTimestampSecs = Number.POSITIVE_INFINITY;
+                for (let i = index - 1; i >= 0; i--) {
+                    const secs = parseSecondsFromLine(entries[i]);
+                    if (secs !== Number.POSITIVE_INFINITY) {
+                        prevTimestampSecs = secs;
+                        break;
+                    }
+                }
+                for (let i = index + 1; i < entries.length; i++) {
+                    const secs = parseSecondsFromLine(entries[i]);
+                    if (secs !== Number.POSITIVE_INFINITY) {
+                        nextTimestampSecs = secs;
+                        break;
+                    }
+                }
+                if (newSecs >= prevTimestampSecs && newSecs <= nextTimestampSecs) {
+                    const ts = formatTime(newSeconds);
+                    const line = '[' + ts + '] ' + (savedMemo ? savedMemo : '');
+                    entries[index] = line;
+                    updatePreview();
+                    updateMessage(`時刻を調整しました: ${ts}`);
+                    if (videoPlayer.src) {
+                        videoPlayer.currentTime = newSeconds;
+                    }
+                    return;
+                }
+                entries.splice(index, 1);
+                const ts = formatTime(newSeconds);
+                const line = '[' + ts + '] ' + (savedMemo ? savedMemo : '');
+                for (let i = 0; i < entries.length; i++) {
+                    const currentSecs = parseSecondsFromLine(entries[i]);
+                    if (currentSecs === Number.POSITIVE_INFINITY) continue;
+                    if (currentSecs < newSecs) continue;
+                    entries.splice(i, 0, line);
+                    updatePreview();
+                    updateMessage(`時刻を調整しました: ${ts}`);
+                    if (videoPlayer.src) {
+                        videoPlayer.currentTime = newSeconds;
+                    }
+                    return;
+                }
+                entries.push(line);
+                updatePreview();
+                updateMessage(`時刻を調整しました: ${ts}`);
+                if (videoPlayer.src) {
+                    videoPlayer.currentTime = newSeconds;
+                }
+            }
+        }, true);
+        window.addEventListener('resize', () => {
+            syncMemoPaneHeight();
+        });
+        videoPlayer.addEventListener('loadedmetadata', () => {
+            syncMemoPaneHeight();
+        });
+        videoPlayer.addEventListener('canplay', () => {
+            syncMemoPaneHeight();
+        });
+        function insertTimestampEntry(line) {
+            const newSecs = parseSecondsFromLine(line);
+            for (let i = 0; i < entries.length; i++) {
+                const currentSecs = parseSecondsFromLine(entries[i]);
+                if (currentSecs === Number.POSITIVE_INFINITY) continue;
+                if (currentSecs < newSecs) continue;
+                entries.splice(i, 0, line);
+                return;
+            }
+            entries.push(line);
+        }
+        function scrollToEntry(index) {
+            setTimeout(() => {
+                const entryElement = logArea.querySelector(`.entry[data-index="${index}"]`);
+                if (entryElement) {
+                    entryElement.classList.add('entry-bounce');
+                    const container = logArea;
+                    const pad = 16;
+                    const entryRect = entryElement.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    const entryTopInContainer = entryRect.top - containerRect.top + container.scrollTop;
+                    const entryBottomInContainer = entryTopInContainer + entryElement.offsetHeight;
+                    const viewTop = container.scrollTop + pad;
+                    const viewBottom = container.scrollTop + container.clientHeight - pad;
+                    let targetTop = container.scrollTop;
+                    if (entryTopInContainer < viewTop) {
+                        targetTop = entryTopInContainer - pad;
+                    } else if (entryBottomInContainer > viewBottom) {
+                        targetTop = entryBottomInContainer - container.clientHeight + pad;
+                    }
+                    const maxTop = Math.max(0, container.scrollHeight - container.clientHeight);
+                    targetTop = Math.max(0, Math.min(maxTop, targetTop));
+                    if (Math.abs(targetTop - container.scrollTop) > 1) {
+                        container.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    }
+                    setTimeout(() => {
+                        entryElement.classList.remove('entry-bounce');
+                    }, 300);
+                }
+            }, 50);
+        }
+        function addTimestamp(note) {
+            if (!videoPlayer.src) { updateMessage('先に動画を読み込んでください'); return; }
+            if (isEditing) {
+                editBtn.classList.remove('blink');
+                void editBtn.offsetWidth;
+                editBtn.classList.add('blink');
+                updateMessage('編集モードを終了してください（完了ボタンを押す）');
+                return;
+            }
+            const t = videoPlayer.currentTime;
+            const ts = formatTime(t);
+            const line = '[' + ts + '] ' + (note ? note : '');
+            const newSecs = Math.floor(t);
+            let insertIndex = -1;
+            for (let i = 0; i < entries.length; i++) {
+                const currentSecs = parseSecondsFromLine(entries[i]);
+                if (currentSecs === Number.POSITIVE_INFINITY) continue;
+                if (currentSecs < newSecs) continue;
+                entries.splice(i, 0, line);
+                insertIndex = i;
+                saveHistory();
+                updatePreview();
+                scrollToEntry(insertIndex);
+                updateMessage(ts + ' を追加しました');
+                return line;
+            }
+            insertIndex = entries.length;
+            entries.push(line);
+            saveHistory();
+            updatePreview();
+            scrollToEntry(insertIndex);
+            updateMessage(ts + ' を追加しました');
+            return line;
+        }
+        addBtn.addEventListener('click', () => {
+            const note = noteInput.value.trim();
+            addTimestamp(note);
+            noteInput.value = '';
+            noteInput.blur();
+        });
+        let speedTimeout;
+        function showSpeed(speed) {
+            speedIndicator.textContent = speed.toFixed(2) + 'x';
+            speedIndicator.classList.add('show');
+            clearTimeout(speedTimeout);
+            speedTimeout = setTimeout(() => {
+                speedIndicator.classList.remove('show');
+            }, 800);
+        }
+        let skipTimeout;
+        let skipAccumulator = 0;
+        let skipDirection = null;
+        function showSkip(direction, amount = 5) {
+            const arrowsEl = skipIndicator.querySelector('.arrows');
+            const secondsEl = skipIndicator.querySelector('.seconds');
+            if (skipDirection !== direction) {
+                skipAccumulator = 0;
+                skipDirection = direction;
+            }
+            skipAccumulator += amount;
+            arrowsEl.textContent = direction === 'forward' ? '»' : '«';
+            secondsEl.textContent = (direction === 'forward' ? '+' : '-') + skipAccumulator + '秒';
+            skipIndicator.classList.remove('left', 'right');
+            skipIndicator.classList.add(direction === 'forward' ? 'right' : 'left');
+            skipIndicator.classList.add('show');
+            clearTimeout(skipTimeout);
+            skipTimeout = setTimeout(() => {
+                skipIndicator.classList.remove('show');
+                skipAccumulator = 0;
+                skipDirection = null;
+            }, 800);
+        }
+        let pauseTimeout;
+        function showPause(isPaused) {
+            const iconEl = pauseIndicator.querySelector('.icon');
+            iconEl.textContent = isPaused ? '❚❚' : '▶';
+            pauseIndicator.classList.add('show');
+            clearTimeout(pauseTimeout);
+            pauseTimeout = setTimeout(() => {
+                pauseIndicator.classList.remove('show');
+            }, 500);
+        }
+        let volumeTimeout;
+        function showVolume(direction) {
+            const iconEl = volumeIndicator.querySelector('.icon');
+            const volumeLevel = Math.round(videoPlayer.volume * 100);
+            if (volumeLevel === 0) {
+                iconEl.textContent = '🔇';
+            } else if (direction === 'up') {
+                iconEl.textContent = '🔊';
+            } else {
+                iconEl.textContent = '🔉';
+            }
+            volumeIndicator.classList.add('show');
+            volumePercent.textContent = volumeLevel + '%';
+            volumePercent.classList.add('show');
+            clearTimeout(volumeTimeout);
+            volumeTimeout = setTimeout(() => {
+                volumeIndicator.classList.remove('show');
+                volumePercent.classList.remove('show');
+            }, 800);
+        }
+        function findNearestTimestampIndex(current, direction) {
+            let bestIdx = -1;
+            let bestDiff = Infinity;
+            for (let i = 0; i < entries.length; i++) {
+                const secs = parseSecondsFromLine(entries[i]);
+                if (secs === Number.POSITIVE_INFINITY) continue;
+                const diff = secs - current;
+                if (direction === 'forward') {
+                    if (diff > 0 && diff < bestDiff) { bestDiff = diff; bestIdx = i; }
+                } else {
+                    if (diff < 0 && -diff < bestDiff) { bestDiff = -diff; bestIdx = i; }
+                }
+            }
+            return bestIdx;
+        }
+        function jumpToNearestTimestamp(direction) {
+            if (!videoPlayer.src) { updateMessage('先に動画を読み込んでください'); return; }
+            const now = videoPlayer.currentTime || 0;
+            let idx = findNearestTimestampIndex(now, direction);
+            if (idx === -1) {
+                updateMessage(direction === 'forward' ? '次のタイムスタンプがありません' : '前のタイムスタンプがありません');
+                return;
+            }
+            if (direction === 'backward') {
+                const t = parseSecondsFromLine(entries[idx]);
+                if (!isNaN(t) && (now - t) < 1.0) {
+                    let j = idx - 1;
+                    while (j >= 0) {
+                        const tj = parseSecondsFromLine(entries[j]);
+                        if (!isNaN(tj) && tj !== Number.POSITIVE_INFINITY) { 
+                            idx = j; 
+                            break; 
+                        }
+                        j--;
+                    }
+                    if (j < 0) {
+                        updateMessage('前のタイムスタンプがありません');
+                        return;
+                    }
+                }
+            }
+            const secs = parseSecondsFromLine(entries[idx]);
+            programmaticSeek = true;
+            videoPlayer.currentTime = secs;
+            updateMessage((direction === 'forward' ? '次へ: ' : '前へ: ') + formatTime(secs));
+            scrollToEntry(idx);
+        }
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                redo();
+                return;
+            }
+            if (e.key === 'Enter' && !isEditing && document.activeElement !== editArea) {
+                e.preventDefault();
+                if (document.activeElement === noteInput) {
+                    const note = noteInput.value.trim();
+                    addTimestamp(note);
+                    noteInput.value = '';
+                    noteInput.blur();
+                } else {
+                    noteInput.focus();
+                }
+            }
+            const isInputFocused = document.activeElement.tagName === 'INPUT' || 
+                                   document.activeElement.tagName === 'TEXTAREA';
+            const isFromVideo = (e.target === videoPlayer);
+            if ((e.key === 't' || e.key === 'T') && !isInputFocused) {
+                e.preventDefault();
+                noteInput.focus();
+            }
+            if (e.key === 'Escape') {
+                if (isEditing) {
+                    e.preventDefault();
+                    editBtn.click();
+                } else if (isInputFocused) {
+                    e.preventDefault();
+                    document.activeElement.blur();
+                }
+            }
+            if ((e.key === 'e' || e.key === 'E') && !isInputFocused && !isEditing) {
+                e.preventDefault();
+                editBtn.click();
+            }
+            if ((e.key === ' ' || e.key.toLowerCase() === 'p') && !isInputFocused && !isFromVideo && videoPlayer.src) {
+                e.preventDefault();
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                    showPause(false);
+                } else {
+                    videoPlayer.pause();
+                    showPause(true);
+                }
+            }
+            if (e.key === 'k' && !isInputFocused && !isFromVideo && videoPlayer.src) {
+                e.preventDefault();
+                videoPlayer.playbackRate = 1;
+                showSpeed(1);
+            }
+            if (e.key === 'j' && !isInputFocused && !isFromVideo && videoPlayer.src) {
+                e.preventDefault();
+                const step = (videoPlayer.playbackRate <= 0.25) ? 0.05 : 0.25;
+                const newSpeed = Math.max(0.1, +(videoPlayer.playbackRate - step).toFixed(2));
+                videoPlayer.playbackRate = newSpeed;
+                showSpeed(newSpeed);
+            }
+            if (e.key === 'l' && !isInputFocused && !isFromVideo && videoPlayer.src) {
+                e.preventDefault();
+                const step = (videoPlayer.playbackRate < 0.25) ? 0.05 : 0.25;
+                const newSpeed = Math.min(10, +(videoPlayer.playbackRate + step).toFixed(2));
+                videoPlayer.playbackRate = newSpeed;
+                showSpeed(newSpeed);
+            }
+            if (e.ctrlKey && e.key === 'ArrowRight' && !isInputFocused && videoPlayer.src) {
+                e.preventDefault();
+                jumpToNearestTimestamp('forward');
+                return;
+            }
+            if (e.ctrlKey && e.key === 'ArrowLeft' && !isInputFocused && videoPlayer.src) {
+                e.preventDefault();
+                jumpToNearestTimestamp('backward');
+                return;
+            }
+            if (e.key === 'ArrowLeft' && !isInputFocused && videoPlayer.src) {
+                e.preventDefault();
+                programmaticSeek = true;
+                const skipAmount = e.shiftKey ? 30 : 5;
+                videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - skipAmount);
+                showSkip('backward', skipAmount);
+            }
+            if (e.key === 'ArrowRight' && !isInputFocused && videoPlayer.src) {
+                e.preventDefault();
+                programmaticSeek = true;
+                const skipAmount = e.shiftKey ? 30 : 5;
+                videoPlayer.currentTime = Math.min(videoPlayer.duration || 0, videoPlayer.currentTime + skipAmount);
+                showSkip('forward', skipAmount);
+            }
+            if (e.key === 'ArrowUp' && !isInputFocused && videoPlayer.src) {
+                e.preventDefault();
+                videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.05);
+                showVolume('up');
+            }
+            if (e.key === 'ArrowDown' && !isInputFocused && videoPlayer.src) {
+                e.preventDefault();
+                videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.05);
+                showVolume('down');
+            }
+        }, true);
+        videoPlayer.addEventListener('keydown', (e) => {
+            const isInputFocused = document.activeElement.tagName === 'INPUT' || 
+                                   document.activeElement.tagName === 'TEXTAREA';
+            if (isInputFocused || !videoPlayer.src) return;
+            if (e.key === ' ' || e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                    showPause(false);
+                } else {
+                    videoPlayer.pause();
+                    showPause(true);
+                }
+                return;
+            }
+            if (e.key === 'k') {
+                e.preventDefault();
+                e.stopPropagation();
+                videoPlayer.playbackRate = 1;
+                showSpeed(1);
+                return;
+            }
+            if (e.key === 'j' || e.key === 'l') {
+                e.preventDefault();
+                e.stopPropagation();
+                const belowOrEqQuarter = (videoPlayer.playbackRate <= 0.25);
+                const step = belowOrEqQuarter ? 0.05 : 0.25;
+                const delta = (e.key === 'j') ? -step : (videoPlayer.playbackRate < 0.25 ? 0.05 : 0.25);
+                let newSpeed = +(videoPlayer.playbackRate + delta).toFixed(2);
+                newSpeed = Math.max(0.1, Math.min(10, newSpeed));
+                videoPlayer.playbackRate = newSpeed;
+                showSpeed(newSpeed);
+            }
+        }, true);
+        editBtn.addEventListener('click', () => {
+            isEditing = !isEditing;
+            editBtn.textContent = isEditing ? '完了' : '編集';
+            if (isEditing) {
+                editBtn.classList.add('active');
+                editBtn.classList.remove('blink');
+            } else {
+                editBtn.classList.remove('active');
+            }
+            if (isEditing) {
+                const fileName = (currentVideoFile && showFileName) ? currentVideoFile.name : '';
+                editArea.value = (fileName ? fileName + '\n' : '') + entries.join('\n');
+                if (typeof syncMemoPaneHeight === 'function') {
+                    syncMemoPaneHeight();
+                } else {
+                    const previewHeight = logArea.offsetHeight;
+                    editArea.style.height = previewHeight + 'px';
+                }
+                logArea.style.display = 'none';
+                editArea.style.display = 'block';
+                editArea.focus();
+                updateMessage('編集モード: 直接テキストを編集できます');
+            } else {
+                const lines = editArea.value.split('\n').filter(l => l.trim());
+                const fileName = currentVideoFile ? currentVideoFile.name : '';
+                if (lines.length > 0 && fileName && lines[0] === fileName) {
+                    entries = lines.slice(1);
+                    showFileName = true;
+                } else if (fileName && showFileName) {
+                    entries = lines;
+                    showFileName = false;
+                } else {
+                    entries = lines;
+                }
+                saveHistory();
+                logArea.style.display = 'block';
+                editArea.style.display = 'none';
+                updatePreview();
+                updateMessage('編集を保存しました');
+            }
+        });
+                downloadBtn.addEventListener('click', () => {
+                    if (isEditing) {
+                        editBtn.classList.remove('blink');
+                        void editBtn.offsetWidth;
+                        editBtn.classList.add('blink');
+                        updateMessage('編集モードを終了してください（完了ボタンを押す）');
+                        return;
+                    }
+                    const fileName = currentVideoFile ? currentVideoFile.name : '';
+                    const textContent = ((currentVideoFile && showFileName) ? (fileName + '\n') : '') + entries.join('\n');
+                    const lines = textContent.split('\n').filter(l => l.trim());
+                    if (lines.length === 0) { updateMessage('保存するタイムスタンプがありません'); return; }
+                    const baseName = currentVideoFile ? currentVideoFile.name : 'video';
+                        const downloadFileName = baseName.replace(/\.[^/.]+$/, '') + '.txt';
+                    const content = lines.join('\n') + '\n';
+                    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = downloadFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                    updateMessage('ダウンロードしました: ' + downloadFileName);
+                });
+        function updateMessage(txt) {
+            messageDisplay.textContent = txt;
+            setTimeout(() => { if (messageDisplay.textContent === txt) messageDisplay.textContent = ''; }, 3000);
+        }
+        function updateDeleteButtons(e) {
+            const delButtons = document.querySelectorAll('.del-per');
+            const logRect = logArea.getBoundingClientRect();
+            delButtons.forEach((btn) => {
+                const entry = btn.closest('.entry');
+                if (!entry) return;
+                const tsBtn = entry.querySelector('.ts');
+                if (!tsBtn) return;
+                const rect = tsBtn.getBoundingClientRect();
+                const outOfView = rect.bottom < logRect.top || rect.top > logRect.bottom || rect.right < logRect.left || rect.left > logRect.right;
+                if (outOfView) {
+                    btn.classList.remove('show');
+                    return;
+                }
+                const btnSize = 25;
+                const left = Math.max(5, rect.left - 36);
+                const top = rect.top + (rect.height - btnSize) / 2;
+                btn.style.left = left + 'px';
+                btn.style.top = top + 'px';
+                const mouseX = e && typeof e.clientX === 'number' ? e.clientX : lastMouseX;
+                const mouseY = e && typeof e.clientY === 'number' ? e.clientY : lastMouseY;
+                const overTs = tsBtn.matches(':hover');
+                const overBtn = btn.matches(':hover');
+                const withinY = mouseY >= rect.top - 8 && mouseY <= rect.bottom + 8;
+                const withinX = mouseX >= rect.left - 62 && mouseX <= rect.right + 12;
+                const shouldShow = overTs || overBtn || (withinY && withinX);
+                if (shouldShow) {
+                    btn.classList.add('show');
+                } else {
+                    btn.classList.remove('show');
+                }
+            });
+        }
+        document.addEventListener('mousemove', (e) => {
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            scheduleDeleteButtonsUpdate();
+        }, true);
+        window.addEventListener('scroll', () => {
+            scheduleDeleteButtonsUpdate();
+        }, { passive: true });
+        window.addEventListener('resize', () => {
+            scheduleDeleteButtonsUpdate();
+        });
+        logArea.addEventListener('scroll', () => {
+            scheduleDeleteButtonsUpdate();
+        }, { passive: true });
+    </script>
+</body>
+</html>
