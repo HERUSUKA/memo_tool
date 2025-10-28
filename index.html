@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="utf-8">
@@ -8,10 +8,10 @@
         :root{--bg:#f8fafc;--card:#ffffff;--muted:#64748b;--accent:#3b82f6;--accent-hover:#2563eb;--border:#e2e8f0;--text:#0f172a;--text-light:#475569}
         [data-theme="dark"]{--bg:#0f0f0f;--card:#212121;--muted:#aaaaaa;--accent:#3ea6ff;--accent-hover:#65b8ff;--border:#3f3f3f;--text:#f1f1f1;--text-light:#aaaaaa}
     body{font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:var(--bg); margin:0; padding:0; color:var(--text); font-size:19px; line-height:1.6; transition:background 0.3s ease, color 0.3s ease}
-    .wrap{max-width:1750px; margin:0 auto; padding:20px 25px}
-    h1{margin:0 0 13px 0; font-size:30px; font-weight:700; color:var(--text); letter-spacing:-0.02em}
-        .watermark{font-size:16px; color:var(--muted); font-weight:400; margin-left:15px; letter-spacing:0.02em}
-        .header{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px}
+    .wrap{max-width:1750px; margin:0 auto; padding:12px 16px}
+    h1{margin:0 0 8px 0; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.02em}
+        .watermark{font-size:12px; color:var(--muted); font-weight:400; margin-left:12px; letter-spacing:0.02em}
+        .header{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
         .title-row{display:flex; align-items:center}
     .header-controls{display:flex; gap:10px; align-items:center}
     .icon-btn{background:var(--card); color:var(--text); border:1px solid var(--border); width:34px; height:34px; padding:0; border-radius:8px; cursor:pointer; font-size:18px; font-weight:600; transition:all 0.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:inline-flex; align-items:center; justify-content:center; line-height:1}
@@ -20,10 +20,10 @@
     .theme-toggle{background:var(--card); color:var(--text); border:1px solid var(--border); padding:0; border-radius:8px; cursor:pointer; font-size:18px; font-weight:600; transition:all 0.2s ease; box-shadow:0 1px 3px rgba(0,0,0,0.05); width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center}
     .theme-toggle:hover{background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 3px 8px rgba(59,130,246,0.2); transform:translateY(-1px)}
         .theme-toggle:active{transform:translateY(0)}
-        .top{display:flex; gap:20px; align-items:center; margin-bottom:18px}
+    .top{display:flex; gap:14px; align-items:center; margin-bottom:10px}
         .file-input{flex:1}
         input[type=file]{display:none}
-        .file-label{background:var(--accent); color:#fff; border:0; padding:11px 20px; border-radius:10px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.1); font-size:18px; font-weight:500; display:inline-block; transition:all 0.2s ease}
+    .file-label{background:var(--accent); color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.08); font-size:14px; font-weight:500; display:inline-block; transition:all 0.18s ease}
         .file-label:hover{background:var(--accent-hover); box-shadow:0 5px 15px rgba(59,130,246,0.2); transform:translateY(-1px)}
         .file-label:active{transform:translateY(0)}
         .file-name{color:var(--text); font-weight:500; margin-left:20px; font-size:18px}
@@ -52,17 +52,29 @@
     @keyframes entry-delete{0%{background:rgba(239,68,68,0.12); opacity:1; transform:scale(1)}100%{background:rgba(239,68,68,0); opacity:0; transform:scale(0.98)}}
     .entry-delete{animation:entry-delete 0.18s ease-out forwards}
         .memo-section{background:var(--card); border-radius:15px; border:1px solid var(--border); overflow:hidden; box-shadow:0 3px 10px rgba(15,23,42,0.04); transition:background-color 0.2s ease, border-color 0.2s ease}
+
+        @keyframes copiedPulse{0%{box-shadow:0 0 0 0 rgba(59,130,246,0.18)}60%{box-shadow:0 0 0 12px rgba(59,130,246,0.06)}100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}}
+        .memo-section.copied{animation:copiedPulse 520ms ease}
+        .memo-section.copied .entry{background:rgba(59,130,246,0.06) !important; transition:background-color 0.28s ease}
+    [data-theme="dark"] .memo-section.copied .entry{background:rgba(59,130,246,0.10) !important}
     .memo-header{display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border); background:#fafbfc; transition:background-color 0.2s ease, border-color 0.2s ease}
         [data-theme="dark"] .memo-header{background:#181818}
         .memo-header strong{font-size:18px; font-weight:600; color:var(--text)}
         .memo-buttons{display:flex; gap:5px}
-    pre#logArea{background:var(--card); padding:15px; margin:0; min-height:275px; max-height:875px; overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word; font-family: "Segoe UI", Meiryo, "Yu Gothic", system-ui, monospace; font-size:20px; line-height:1.5; border:none; color:var(--text); transition:background-color 0.2s ease, color 0.2s ease}
+    .clear-btn{background:var(--card); color:var(--text); border:1px solid var(--border); padding:6px 11px; border-radius:10px; cursor:pointer; font-size:15px; transition:all 0.2s ease}
+    .clear-btn:hover{background:#ef4444; color:#fff; border-color:#ef4444; box-shadow:0 5px 15px rgba(239,68,68,0.18); transform:translateY(-1px)}
+    [data-theme="dark"] .clear-btn{border-color:var(--border)}
+    pre#logArea{background:var(--card); padding:15px; margin:0; min-height:275px; max-height:875px; overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word; font-family: "Segoe UI", Meiryo, "Yu Gothic", system-ui, monospace; font-size:20px; line-height:1.5; border:none; color:var(--text); transition:background-color 0.2s ease, color 0.2s ease; scrollbar-gutter: stable both-edges; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent}
         pre#logArea::-webkit-scrollbar{width:10px}
         pre#logArea::-webkit-scrollbar-track{background:transparent}
         pre#logArea::-webkit-scrollbar-thumb{background:#cbd5e1; border-radius:5px}
         pre#logArea::-webkit-scrollbar-thumb:hover{background:#94a3b8}
         .filename{font-weight:600; color:var(--accent); margin-bottom:10px; font-size:19px}
-    .entry{margin:0; line-height:1.7}
+    .entry{margin:0; line-height:1.7; transition:background-color 0.18s ease, opacity 0.18s ease, transform 0.18s ease}
+          .entry.current-ts{background:rgba(128,128,128,0.06)}
+          [data-theme="dark"] .entry.current-ts{background:rgba(128,128,128,0.06)}
+          .entry.jump-highlight{background:rgba(59,130,246,0.12); transition:background-color 0.22s ease, opacity 0.22s ease, transform 0.22s ease}
+          [data-theme="dark"] .entry.jump-highlight{background:rgba(59,130,246,0.14)}
         .entry .ts{background:transparent; color:inherit; border:0; border-radius:0; padding:0; cursor:pointer; font-size:0.95em; text-decoration:none; font-weight:500; transition:color 0.15s ease}
         .entry .ts:hover{color:var(--accent); text-decoration:underline}
         .entry .ts:focus-visible{outline:3px solid rgba(37,99,235,0.35); outline-offset:3px; border-radius:3px}
@@ -97,11 +109,25 @@
         body:focus-visible{outline:none}
         #wrap:focus{outline:none}
         #wrap:focus-visible{outline:none}
-        .content-grid{display:grid; grid-template-columns:1.7fr 1fr; gap:25px; align-items:start}
+    .content-grid{display:grid; grid-template-columns:1.7fr 1fr; gap:15px; align-items:start}
         .player video{max-width:100%}
-    textarea#editArea{display:none; width:100%; min-height:275px; padding:20px; border-radius:13px; border:1px solid var(--accent); box-shadow:0 0 0 4px rgba(59,130,246,0.1); font-family: 'Segoe UI', Meiryo, 'Yu Gothic', system-ui, monospace; font-size:20px; line-height:1.5; resize:vertical; outline:none; background:var(--card); color:var(--text); box-sizing:border-box; transition:all 0.3s ease}
-        .footer{margin-top:30px; padding-top:20px; border-top:1px solid var(--border); transition:border-color 0.3s ease}
-        #message{color:var(--text-light); font-size:18px; font-weight:500}
+    textarea#editArea{display:none; width:100%; min-height:275px; padding:20px; border-radius:13px; border:1px solid var(--accent); box-shadow:0 0 0 4px rgba(59,130,246,0.1); font-family: 'Segoe UI', Meiryo, 'Yu Gothic', system-ui, monospace; font-size:20px; line-height:1.5; resize:vertical; outline:none; background:var(--card); color:var(--text); box-sizing:border-box; transition:all 0.3s ease; scrollbar-gutter: stable both-edges; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent}
+        textarea#editArea::-webkit-scrollbar{width:10px}
+        textarea#editArea::-webkit-scrollbar-track{background:transparent}
+        textarea#editArea::-webkit-scrollbar-thumb{background:#cbd5e1; border-radius:5px}
+        textarea#editArea::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+    [data-theme="dark"] pre#logArea{scrollbar-color: #2f2f2f rgba(255,255,255,0.02)}
+    [data-theme="dark"] pre#logArea{scrollbar-color: #2f2f2f rgba(255,255,255,0.02)}
+    [data-theme="dark"] textarea#editArea{scrollbar-color: #2f2f2f rgba(255,255,255,0.02)}
+    [data-theme="dark"] pre#logArea::-webkit-scrollbar-track{background:transparent}
+    [data-theme="dark"] textarea#editArea::-webkit-scrollbar-track{background:transparent}
+    [data-theme="dark"] pre#logArea::-webkit-scrollbar-thumb{background:#2f2f2f}
+    [data-theme="dark"] pre#logArea::-webkit-scrollbar-thumb:hover{background:#4b4b4b}
+    [data-theme="dark"] textarea#editArea::-webkit-scrollbar-thumb{background:#2f2f2f}
+    [data-theme="dark"] textarea#editArea::-webkit-scrollbar-thumb:hover{background:#4b4b4b}
+    .player-message{margin-top:12px; color:var(--text-light); font-size:16px; font-weight:500; min-height:20px; line-height:1.3}
+    #message{color:var(--text-light); font-size:16px; font-weight:500; min-height:20px; line-height:1.3}
     .info-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:20000}
         .info-backdrop.show{display:flex}
         .info-modal{background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:12px; width:min(680px,92vw); max-height:80vh; overflow:auto; box-shadow:0 15px 40px rgba(0,0,0,0.2)}
@@ -147,6 +173,7 @@
                     <div id="volumePercent" class="volume-percent"></div>
                     <video id="localVideoPlayer" controls width="800" style="max-width:100%;" tabindex="-1"></video>
                 </div>
+                <div id="message" class="player-message hint"></div>
             </div>
             <div class="right-col">
                 <div class="controls">
@@ -163,17 +190,16 @@
                     <div class="memo-header">
                         <strong>メモファイル</strong>
                         <div class="memo-buttons">
-                            <button id="editBtn" class="secondary">編集</button>
-                            <button id="downloadBtn" class="secondary">保存</button>
+                            <button id="editBtn" class="secondary" aria-label="編集">編集</button>
+                            <button id="downloadBtn" class="secondary" aria-label="保存">保存</button>
+                            <button id="copyBtn" class="secondary" aria-label="コピー">コピー</button>
+                            <button id="clearBtn" class="clear-btn" aria-label="メモをクリア">クリア</button>
                         </div>
                     </div>
                     <pre id="logArea"></pre>
                     <textarea id="editArea"></textarea>
                 </div>
             </div>
-        </div>
-        <div class="footer">
-            <div id="message" class="hint"></div>
         </div>
     </div>
     <div id="infoBackdrop" class="info-backdrop" aria-hidden="true">
@@ -193,6 +219,7 @@
                     <li><strong>←/→</strong>: 5秒スキップ（<strong>Shift</strong> + <strong>←/→</strong> で30秒）</li>
                     <li><strong>↑/↓</strong>: 音量 ±</li>
                     <li><strong>Ctrl+Z</strong> / <strong>Ctrl+Y</strong>: 元に戻す・やり直し</li>
+                    <li><strong>Delete</strong> / <strong>Q</strong>: 現在選択されている（再生時刻に基づく）タイムスタンプを削除します</li>
                     <li><strong>Esc</strong>: 編集終了またはフォーカス解除</li>
                     <li>タイムスタンプ<strong>クリック</strong>: 該当時刻へ移動</li>
                     <li>タイムスタンプ<strong>ドラッグ</strong>: 時刻微調整して再配置</li>
@@ -212,6 +239,8 @@
         const editArea = document.getElementById('editArea');
     const editBtn = document.getElementById('editBtn');
     const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearBtn = document.getElementById('clearBtn');
     const wrapEl = document.getElementById('wrap');
     const speedIndicator = document.getElementById('speedIndicator');
     const skipIndicator = document.getElementById('skipIndicator');
@@ -245,14 +274,40 @@
     let history = [];
     let historyIndex = -1;
     const MAX_HISTORY = 50;
+    const AUTOSAVE_KEY = '視点メモツール_autosave_v1';
+    function saveToLocalStorage() {
+        try {
+            const payload = {
+                entries: entries,
+                showFileName: showFileName,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(payload));
+        } catch (e) {}
+    }
+    function loadFromLocalStorage() {
+        try {
+            const raw = localStorage.getItem(AUTOSAVE_KEY);
+            if (!raw) return false;
+            const data = JSON.parse(raw);
+            if (!data || !Array.isArray(data.entries)) return false;
+            entries = data.entries.slice();
+            showFileName = !!data.showFileName;
+            updatePreview();
+            updateMessage('前回のセッションを復元しました');
+            return true;
+        } catch (e) { return false; }
+    }
     function saveHistory() {
         history = history.slice(0, historyIndex + 1);
         history.push(JSON.stringify(entries));
         if (history.length > MAX_HISTORY) {
             history.shift();
+            historyIndex = history.length - 1;
         } else {
-            historyIndex++;
+            historyIndex = history.length - 1;
         }
+        saveToLocalStorage();
     }
     function undo() {
         if (historyIndex > 0) {
@@ -290,6 +345,9 @@
     }
     initTheme();
     themeToggle.addEventListener('click', toggleTheme);
+    if (loadFromLocalStorage()) {
+        saveHistory();
+    }
     function openInfo(){ infoBackdrop.classList.add('show'); infoBackdrop.setAttribute('aria-hidden','false'); }
     function closeInfo(){ infoBackdrop.classList.remove('show'); infoBackdrop.setAttribute('aria-hidden','true'); }
     infoBtn.addEventListener('click', openInfo);
@@ -379,6 +437,7 @@
         }
         videoPlayer.addEventListener('timeupdate', () => {
             currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+            if (typeof updateCurrentTimestampHighlight === 'function') updateCurrentTimestampHighlight();
         });
         videoPlayer.addEventListener('seeked', () => {
             if (programmaticSeek) { programmaticSeek = false; return; }
@@ -447,6 +506,7 @@
             if (fileName) html += '<div class="filename">' + escapeHtml(fileName) + '</div>';
             html += entries.map((line, index) => renderEntryHTML(line, index)).join('');
             logArea.innerHTML = html;
+            if (typeof updateCurrentTimestampHighlight === 'function') updateCurrentTimestampHighlight();
             if (typeof syncMemoPaneHeight === 'function') {
                 syncMemoPaneHeight();
             }
@@ -717,6 +777,8 @@
             setTimeout(() => {
                 const entryElement = logArea.querySelector(`.entry[data-index="${index}"]`);
                 if (entryElement) {
+                    entryElement.classList.add('jump-highlight');
+                    entryElement.classList.add('entry-bounce');
                     entryElement.classList.add('entry-bounce');
                     const container = logArea;
                     const pad = 16;
@@ -738,8 +800,10 @@
                         container.scrollTo({ top: targetTop, behavior: 'smooth' });
                     }
                     setTimeout(() => {
-                        entryElement.classList.remove('entry-bounce');
-                    }, 300);
+                        try { entryElement.classList.remove('jump-highlight'); } catch(_) {}
+                        try { entryElement.classList.remove('entry-bounce'); } catch(_) {}
+                        if (typeof updateCurrentTimestampHighlight === 'function') updateCurrentTimestampHighlight();
+                    }, 260);
                 }
             }, 50);
         }
@@ -949,6 +1013,27 @@
                 videoPlayer.playbackRate = 1;
                 showSpeed(1);
             }
+
+            
+            if (!isEditing && !isInputFocused && (e.key === 'Delete' || e.key === 'q' || e.key === 'Q')) {
+                e.preventDefault();
+                const idx = getCurrentTimestampIndex();
+                if (idx >= 0 && idx < entries.length) {
+                    
+                    const entryEl = logArea.querySelector(`.entry[data-index="${idx}"]`);
+                    if (entryEl) { entryEl.classList.add('entry-delete');
+                        setTimeout(() => {
+                            entries.splice(idx, 1);
+                            saveHistory();
+                            updatePreview();
+                            updateMessage('選択中のタイムスタンプを削除しました');
+                        }, 180);
+                    } else { entries.splice(idx, 1); saveHistory(); updatePreview(); updateMessage('選択中のタイムスタンプを削除しました'); }
+                } else {
+                    updateMessage('削除対象のタイムスタンプがありません');
+                }
+                return;
+            }
             if (e.key === 'j' && !isInputFocused && !isFromVideo && videoPlayer.src) {
                 e.preventDefault();
                 const step = (videoPlayer.playbackRate <= 0.25) ? 0.05 : 0.25;
@@ -1036,6 +1121,8 @@
         editBtn.addEventListener('click', () => {
             isEditing = !isEditing;
             editBtn.textContent = isEditing ? '完了' : '編集';
+            editBtn.setAttribute('aria-label', isEditing ? '完了' : '編集');
+            editBtn.title = isEditing ? '完了' : '編集';
             if (isEditing) {
                 editBtn.classList.add('active');
                 editBtn.classList.remove('blink');
@@ -1053,7 +1140,58 @@
                 }
                 logArea.style.display = 'none';
                 editArea.style.display = 'block';
-                editArea.focus();
+                try {
+                    const idx = (typeof getCurrentTimestampIndex === 'function') ? getCurrentTimestampIndex() : -1;
+                    let caretPos = editArea.value.length;
+                    if (idx >= 0 && Array.isArray(entries) && entries.length > 0) {
+                        let offset = 0;
+                        if (fileName) offset = fileName.length + 1;
+                        for (let i = 0; i < idx; i++) {
+                            offset += (entries[i] ? entries[i].length : 0) + 1;
+                        }
+                        offset += (entries[idx] ? entries[idx].length : 0);
+                        caretPos = Math.max(0, Math.min(editArea.value.length, offset));
+                    }
+                    editArea.focus();
+                    setTimeout(() => {
+                        try {
+                            editArea.setSelectionRange(caretPos, caretPos);
+                            try {
+                                const comp = window.getComputedStyle(editArea);
+                                const mirror = document.createElement('div');
+                                mirror.style.position = 'absolute';
+                                mirror.style.visibility = 'hidden';
+                                mirror.style.whiteSpace = 'pre-wrap';
+                                mirror.style.wordWrap = 'break-word';
+                                mirror.style.boxSizing = comp.boxSizing;
+                                mirror.style.width = (editArea.clientWidth) + 'px';
+                                mirror.style.fontFamily = comp.fontFamily;
+                                mirror.style.fontSize = comp.fontSize;
+                                mirror.style.lineHeight = comp.lineHeight;
+                                mirror.style.paddingTop = comp.paddingTop;
+                                mirror.style.paddingLeft = comp.paddingLeft;
+                                mirror.style.paddingRight = comp.paddingRight;
+                                mirror.style.paddingBottom = comp.paddingBottom;
+                                mirror.style.letterSpacing = comp.letterSpacing;
+                                mirror.style.whiteSpace = 'pre-wrap';
+                                let before = editArea.value.substring(0, caretPos);
+                                if (before.endsWith('\n')) before += ' ';
+                                mirror.textContent = before;
+                                document.body.appendChild(mirror);
+                                const caretPixelTop = mirror.getBoundingClientRect().height;
+                                const target = Math.max(0, caretPixelTop - (editArea.clientHeight / 2));
+                                editArea.scrollTop = Math.max(0, Math.min(editArea.scrollHeight, target));
+                                mirror.remove();
+                            } catch (_) {
+                                if (editArea.value.length > 0) {
+                                    editArea.scrollTop = Math.floor(editArea.scrollHeight * (caretPos / editArea.value.length));
+                                }
+                            }
+                        } catch (_) {}
+                    }, 8);
+                } catch (e) {
+                    try { editArea.focus(); editArea.setSelectionRange(editArea.value.length, editArea.value.length); } catch(_) {}
+                }
                 updateMessage('編集モード: 直接テキストを編集できます');
             } else {
                 const lines = editArea.value.split('\n').filter(l => l.trim());
@@ -1100,6 +1238,58 @@
                     URL.revokeObjectURL(url);
                     updateMessage('ダウンロードしました: ' + downloadFileName);
                 });
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', async () => {
+                        if (isEditing) {
+                            editBtn.classList.remove('blink');
+                            void editBtn.offsetWidth;
+                            editBtn.classList.add('blink');
+                            updateMessage('編集モードを終了してください（完了ボタンを押す）');
+                            return;
+                        }
+                        
+                        const textContent = entries.join('\n');
+                        const lines = textContent.split('\n').filter(l => l.trim());
+                        if (lines.length === 0) { updateMessage('コピーするタイムスタンプがありません'); return; }
+                        try {
+                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                await navigator.clipboard.writeText(textContent + '\n');
+                            } else {
+                                const ta = document.createElement('textarea');
+                                ta.value = textContent + '\n';
+                                document.body.appendChild(ta);
+                                ta.select();
+                                document.execCommand('copy');
+                                ta.remove();
+                            }
+                            updateMessage('クリップボードにコピーしました');
+                            try {
+                                const memoSection = document.querySelector('.memo-section');
+                                if (memoSection) {
+                                    memoSection.classList.add('copied');
+                                    setTimeout(() => { 
+                                        try { memoSection.classList.remove('copied'); } catch(_){ }
+                                        try { if (typeof updateCurrentTimestampHighlight === 'function') updateCurrentTimestampHighlight(); } catch(_){}
+                                    }, 620);
+                                }
+                            } catch(_) {}
+                        } catch (err) {
+                            updateMessage('コピーに失敗しました');
+                        }
+                    });
+                }
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    const ok = window.confirm('メモを完全にクリアします。よろしいですか？');
+                    if (!ok) return;
+                    entries = [];
+                    showFileName = !!currentVideoFile;
+                    try { localStorage.removeItem(AUTOSAVE_KEY); } catch (e) {}
+                    saveHistory();
+                    updatePreview();
+                    updateMessage('メモをクリアしました');
+                });
+            }
         function updateMessage(txt) {
             messageDisplay.textContent = txt;
             setTimeout(() => { if (messageDisplay.textContent === txt) messageDisplay.textContent = ''; }, 3000);
@@ -1136,6 +1326,33 @@
                     btn.classList.remove('show');
                 }
             });
+        }
+        
+        function getCurrentTimestampIndex() {
+            const now = (videoPlayer && videoPlayer.src) ? (videoPlayer.currentTime || 0) : 0;
+            let lastPast = -1;
+            for (let i = 0; i < entries.length; i++) {
+                const secs = parseSecondsFromLine(entries[i]);
+                if (secs === Number.POSITIVE_INFINITY) continue;
+                if (secs <= now) lastPast = i;
+            }
+            if (lastPast !== -1) return lastPast;
+            for (let i = 0; i < entries.length; i++) {
+                const secs = parseSecondsFromLine(entries[i]);
+                if (secs === Number.POSITIVE_INFINITY) continue;
+                if (secs > now) return i;
+            }
+            return -1;
+        }
+
+        function updateCurrentTimestampHighlight() {
+            const idx = getCurrentTimestampIndex();
+            const entryEls = logArea.querySelectorAll('.entry');
+            entryEls.forEach((el) => el.classList.remove('current-ts'));
+            if (idx >= 0) {
+                const el = logArea.querySelector(`.entry[data-index="${idx}"]`);
+                if (el) el.classList.add('current-ts');
+            }
         }
         document.addEventListener('mousemove', (e) => {
             lastMouseX = e.clientX;
