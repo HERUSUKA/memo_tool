@@ -808,14 +808,10 @@
             }, 50);
         }
         function addTimestamp(note) {
-            if (!videoPlayer.src) { updateMessage('先に動画を読み込んでください'); return; }
-            if (isEditing) {
-                editBtn.classList.remove('blink');
-                void editBtn.offsetWidth;
-                editBtn.classList.add('blink');
-                updateMessage('編集モードを終了してください（完了ボタンを押す）');
-                return;
-            }
+                if (!videoPlayer.src) { updateMessage('先に動画を読み込んでください'); return; }
+                if (isEditing) {
+                    editBtn.click();
+                }
             const t = videoPlayer.currentTime;
             const ts = formatTime(t);
             const line = '[' + ts + '] ' + (note ? note : '');
